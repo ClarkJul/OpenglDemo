@@ -10,19 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OpenglDemo">
         <activity android:name=".MaskActivity">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity android:name=".MainActivity">
-
-            <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            -->
         </activity>
         <activity android:name=".ChapterMain">
             <!--<intent-filter>

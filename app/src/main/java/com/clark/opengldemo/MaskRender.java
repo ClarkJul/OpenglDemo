@@ -20,8 +20,8 @@ import javax.microedition.khronos.opengles.GL10;
  * 2022/1/9 17:13
  */
 class MaskRender implements GLSurfaceView.Renderer {
-    private Bitmap mBitmapMask1,mBitmapMask2;
-    private Bitmap mBitmapImage1,mBitmapImage2;
+    private Bitmap mBitmapMask1, mBitmapMask2;
+    private Bitmap mBitmapImage1, mBitmapImage2;
     private Bitmap mBitmapLogo;
 
     // 要装在纹理的数量
@@ -37,12 +37,11 @@ class MaskRender implements GLSurfaceView.Renderer {
     private int texture[] = new int[NUM_TEXTURES];
 
     // 是否使用蒙板技术
-    private boolean masking=true;
+    private boolean masking = true;
     // 屏幕切换
-    private boolean scene=false;
+    private boolean scene = false;
 
-    public MaskRender(Context context)
-    {
+    public MaskRender(Context context) {
         // 装载图片
         mBitmapMask1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.mask1);
         mBitmapMask2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.mask2);
@@ -52,8 +51,7 @@ class MaskRender implements GLSurfaceView.Renderer {
     }
 
     @Override
-    public void onDrawFrame(GL10 gl)
-    {
+    public void onDrawFrame(GL10 gl) {
         // TODO Auto-generated method stub
 
         // 首先清理屏幕
@@ -72,8 +70,7 @@ class MaskRender implements GLSurfaceView.Renderer {
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height)
-    {
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
         // TODO Auto-generated method stub
 
         float ratio = (float) width / height;
@@ -92,8 +89,7 @@ class MaskRender implements GLSurfaceView.Renderer {
     }
 
     @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config)
-    {
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // TODO Auto-generated method stub
 
         //告诉系统需要对透视进行修正
@@ -106,8 +102,7 @@ class MaskRender implements GLSurfaceView.Renderer {
     }
 
     /* 装载纹理 */
-    public void LoadTextures(GL10 gl)
-    {
+    public void LoadTextures(GL10 gl) {
         // 允许纹理贴图
         gl.glEnable(GL10.GL_TEXTURE_2D);
 
@@ -158,11 +153,10 @@ class MaskRender implements GLSurfaceView.Renderer {
     }
 
 
-    private void draw(GL10 gl)
-    {
+    private void draw(GL10 gl) {
         ByteBuffer indices = ByteBuffer.wrap(new byte[]{1, 0, 2, 3}).order(ByteOrder.nativeOrder());
-        FloatBuffer vertices = ByteBuffer.allocateDirect(12*4).order(ByteOrder.nativeOrder()).asFloatBuffer();//FloatBuffer.wrap(new float[12]).order(ByteOrder.nativeOrder());
-        FloatBuffer texcoords = ByteBuffer.allocateDirect(8*4).order(ByteOrder.nativeOrder()).asFloatBuffer();//FloatBuffer.wrap(new float[8]);
+        FloatBuffer vertices = ByteBuffer.allocateDirect(12 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();//FloatBuffer.wrap(new float[12]).order(ByteOrder.nativeOrder());
+        FloatBuffer texcoords = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();//FloatBuffer.wrap(new float[8]);
 
         gl.glScalef(10, 10, 10);
 
@@ -182,15 +176,27 @@ class MaskRender implements GLSurfaceView.Renderer {
 
         // 保存顶点数组、纹理坐标数组
         texcoords.clear();
-        texcoords.put(0.0f); texcoords.put(-roll+3.0f);
-        texcoords.put(3.0f); texcoords.put(-roll+3.0f);
-        texcoords.put(3.0f); texcoords.put(-roll+0.0f);
-        texcoords.put(0.0f); texcoords.put(-roll+0.0f);
+        texcoords.put(0.0f);
+        texcoords.put(-roll + 3.0f);
+        texcoords.put(3.0f);
+        texcoords.put(-roll + 3.0f);
+        texcoords.put(3.0f);
+        texcoords.put(-roll + 0.0f);
+        texcoords.put(0.0f);
+        texcoords.put(-roll + 0.0f);
         vertices.clear();
-        vertices.put(-1.1f); vertices.put(-1.1f); vertices.put(0.0f);
-        vertices.put(1.1f);  vertices.put(-1.1f); vertices.put(0.0f);
-        vertices.put(1.1f);  vertices.put(1.1f);  vertices.put(0.0f);
-        vertices.put(-1.1f); vertices.put(1.1f);  vertices.put(0.0f);
+        vertices.put(-1.1f);
+        vertices.put(-1.1f);
+        vertices.put(0.0f);
+        vertices.put(1.1f);
+        vertices.put(-1.1f);
+        vertices.put(0.0f);
+        vertices.put(1.1f);
+        vertices.put(1.1f);
+        vertices.put(0.0f);
+        vertices.put(-1.1f);
+        vertices.put(1.1f);
+        vertices.put(0.0f);
         // 绘制
         gl.glDrawElements(GL10.GL_TRIANGLE_STRIP, 4, GL10.GL_UNSIGNED_BYTE, indices);
 
@@ -200,37 +206,46 @@ class MaskRender implements GLSurfaceView.Renderer {
         gl.glDisable(GL10.GL_DEPTH_TEST);
 
         // 使用蒙板混合屏幕颜色
-        if (masking)
-        {
+        if (masking) {
             gl.glBlendFunc(GL10.GL_DST_COLOR, GL10.GL_ZERO);
         }
 
         // 屏幕选择
-        if (scene)
-        {
+        if (scene) {
             // 平移
             gl.glTranslatef(0.0f, 0.0f, -1.0f);
             // 旋转
-            gl.glRotatef(roll*360, 0.0f, 0.0f, 1.0f);
+            gl.glRotatef(roll * 360, 0.0f, 0.0f, 1.0f);
 
             //使用蒙板
-            if (masking)
-            {
+            if (masking) {
                 // 绑定纹理
                 gl.glBindTexture(GL10.GL_TEXTURE_2D, texture[3]);
 
                 // 保存数据
                 texcoords.clear();
-                texcoords.put(0.0f); texcoords.put(1.0f);
-                texcoords.put(1.0f); texcoords.put(1.0f);
-                texcoords.put(1.0f); texcoords.put(0.0f);
-                texcoords.put(0.0f); texcoords.put(0.0f);
+                texcoords.put(0.0f);
+                texcoords.put(1.0f);
+                texcoords.put(1.0f);
+                texcoords.put(1.0f);
+                texcoords.put(1.0f);
+                texcoords.put(0.0f);
+                texcoords.put(0.0f);
+                texcoords.put(0.0f);
 
                 vertices.clear();
-                vertices.put(-1.1f); vertices.put(-1.1f); vertices.put(0.0f);
-                vertices.put(1.1f);  vertices.put(-1.1f); vertices.put(0.0f);
-                vertices.put(1.1f);  vertices.put(1.1f);  vertices.put(0.0f);
-                vertices.put(-1.1f); vertices.put(1.1f);  vertices.put(0.0f);
+                vertices.put(-1.1f);
+                vertices.put(-1.1f);
+                vertices.put(0.0f);
+                vertices.put(1.1f);
+                vertices.put(-1.1f);
+                vertices.put(0.0f);
+                vertices.put(1.1f);
+                vertices.put(1.1f);
+                vertices.put(0.0f);
+                vertices.put(-1.1f);
+                vertices.put(1.1f);
+                vertices.put(0.0f);
 
                 // 绘制
                 gl.glDrawElements(GL10.GL_TRIANGLE_STRIP, 4, GL10.GL_UNSIGNED_BYTE, indices);
@@ -244,38 +259,59 @@ class MaskRender implements GLSurfaceView.Renderer {
 
             // 保存数据
             texcoords.clear();
-            texcoords.put(0.0f); texcoords.put(1.0f);
-            texcoords.put(1.0f); texcoords.put(1.0f);
-            texcoords.put(1.0f); texcoords.put(0.0f);
-            texcoords.put(0.0f); texcoords.put(0.0f);
+            texcoords.put(0.0f);
+            texcoords.put(1.0f);
+            texcoords.put(1.0f);
+            texcoords.put(1.0f);
+            texcoords.put(1.0f);
+            texcoords.put(0.0f);
+            texcoords.put(0.0f);
+            texcoords.put(0.0f);
 
             vertices.clear();
-            vertices.put(-1.1f); vertices.put(-1.1f); vertices.put(0.0f);
-            vertices.put(1.1f);  vertices.put(-1.1f); vertices.put(0.0f);
-            vertices.put(1.1f);  vertices.put(1.1f);  vertices.put(0.0f);
-            vertices.put(-1.1f); vertices.put(1.1f);  vertices.put(0.0f);
+            vertices.put(-1.1f);
+            vertices.put(-1.1f);
+            vertices.put(0.0f);
+            vertices.put(1.1f);
+            vertices.put(-1.1f);
+            vertices.put(0.0f);
+            vertices.put(1.1f);
+            vertices.put(1.1f);
+            vertices.put(0.0f);
+            vertices.put(-1.1f);
+            vertices.put(1.1f);
+            vertices.put(0.0f);
 
             // 绘制
             gl.glDrawElements(GL10.GL_TRIANGLE_STRIP, 4, GL10.GL_UNSIGNED_BYTE, indices);
-        }
-        else
-        {
-            if (masking)
-            {
+        } else {
+            if (masking) {
                 // 绑定纹理
                 gl.glBindTexture(GL10.GL_TEXTURE_2D, texture[1]);
 
 
                 texcoords.clear();
-                texcoords.put(roll+0.0f); texcoords.put(4.0f);
-                texcoords.put(roll+4.0f); texcoords.put(4.0f);
-                texcoords.put(roll+4.0f); texcoords.put(0.0f);
-                texcoords.put(roll+0.0f); texcoords.put(0.0f);
+                texcoords.put(roll + 0.0f);
+                texcoords.put(4.0f);
+                texcoords.put(roll + 4.0f);
+                texcoords.put(4.0f);
+                texcoords.put(roll + 4.0f);
+                texcoords.put(0.0f);
+                texcoords.put(roll + 0.0f);
+                texcoords.put(0.0f);
                 vertices.clear();
-                vertices.put(-1.1f); vertices.put(-1.1f); vertices.put(0.0f);
-                vertices.put(1.1f);  vertices.put(-1.1f); vertices.put(0.0f);
-                vertices.put(1.1f);  vertices.put(1.1f);  vertices.put(0.0f);
-                vertices.put(-1.1f); vertices.put(1.1f);  vertices.put(0.0f);
+                vertices.put(-1.1f);
+                vertices.put(-1.1f);
+                vertices.put(0.0f);
+                vertices.put(1.1f);
+                vertices.put(-1.1f);
+                vertices.put(0.0f);
+                vertices.put(1.1f);
+                vertices.put(1.1f);
+                vertices.put(0.0f);
+                vertices.put(-1.1f);
+                vertices.put(1.1f);
+                vertices.put(0.0f);
 
 
                 gl.glDrawElements(GL10.GL_TRIANGLE_STRIP, 4, GL10.GL_UNSIGNED_BYTE, indices);
@@ -287,15 +323,27 @@ class MaskRender implements GLSurfaceView.Renderer {
             gl.glBindTexture(GL10.GL_TEXTURE_2D, texture[2]);
 
             texcoords.clear();
-            texcoords.put(roll+0.0f); texcoords.put(4.0f);
-            texcoords.put(roll+4.0f); texcoords.put(4.0f);
-            texcoords.put(roll+4.0f); texcoords.put(0.0f);
-            texcoords.put(roll+0.0f); texcoords.put(0.0f);
+            texcoords.put(roll + 0.0f);
+            texcoords.put(4.0f);
+            texcoords.put(roll + 4.0f);
+            texcoords.put(4.0f);
+            texcoords.put(roll + 4.0f);
+            texcoords.put(0.0f);
+            texcoords.put(roll + 0.0f);
+            texcoords.put(0.0f);
             vertices.clear();
-            vertices.put(-1.1f); vertices.put(-1.1f); vertices.put(0.0f);
-            vertices.put(1.1f);  vertices.put(-1.1f); vertices.put(0.0f);
-            vertices.put(1.1f);  vertices.put(1.1f);  vertices.put(0.0f);
-            vertices.put(-1.1f); vertices.put(1.1f);  vertices.put(0.0f);
+            vertices.put(-1.1f);
+            vertices.put(-1.1f);
+            vertices.put(0.0f);
+            vertices.put(1.1f);
+            vertices.put(-1.1f);
+            vertices.put(0.0f);
+            vertices.put(1.1f);
+            vertices.put(1.1f);
+            vertices.put(0.0f);
+            vertices.put(-1.1f);
+            vertices.put(1.1f);
+            vertices.put(0.0f);
 
             gl.glDrawElements(GL10.GL_TRIANGLE_STRIP, 4, GL10.GL_UNSIGNED_BYTE, indices);
         }
@@ -310,26 +358,23 @@ class MaskRender implements GLSurfaceView.Renderer {
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 
         // 旋转纹理，看得更清楚
-        roll+=0.002f;
-        if (roll>1.0f)
-        {
-            roll-=1.0f;
+        roll += 0.002f;
+        if (roll > 1.0f) {
+            roll -= 1.0f;
         }
 
         // 改变旋转的角度
-        xrot+=0.3f;
-        yrot+=0.2f;
-        zrot+=0.4f;
+        xrot += 0.3f;
+        yrot += 0.2f;
+        zrot += 0.4f;
     }
 
 
-    public void UseMasking()
-    {
+    public void UseMasking() {
         masking = !masking;
     }
 
-    public void ChangeScreen()
-    {
+    public void ChangeScreen() {
         scene = !scene;
     }
 }
