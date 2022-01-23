@@ -21,9 +21,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mGLSurfaceView = new GLSurfaceView(this);
-//        mGLRender = new ParticleRender(this);
+        mGLRender = new ParticleRender(this);
         //mGLRender = new ChangeRender(this);
-        mGLRender = new MultiRender(this);
+//        mGLRender = new MultiRender(this);
         mGLSurfaceView.setRenderer(mGLRender);
         //mGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         setContentView(mGLSurfaceView);
