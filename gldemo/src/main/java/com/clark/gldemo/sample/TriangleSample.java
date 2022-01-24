@@ -37,12 +37,12 @@ public class TriangleSample extends GLSampleBase {
 
     @Override
     public void init() {
-        m_ProgramObj = OpenGLUtil.createProgram(vShaderStr,fShaderStr);
+        glProgram = OpenGLUtil.createProgram(vShaderStr,fShaderStr);
     }
 
     @Override
     public void draw(int screenW, int screenH) {
-        if(m_ProgramObj == 0) {
+        if(glProgram == 0) {
             return;
         }
 
@@ -50,7 +50,7 @@ public class TriangleSample extends GLSampleBase {
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Use the program object
-        GLES20.glUseProgram (m_ProgramObj);
+        GLES20.glUseProgram (glProgram);
 
         // Load the vertex data
         GLES20.glVertexAttribPointer (0, 3, GLES20.GL_FLOAT,false, 0, verticesBuffer );
@@ -62,9 +62,9 @@ public class TriangleSample extends GLSampleBase {
 
     @Override
     public void destroy() {
-        if (m_ProgramObj!=0) {
-            GLES20.glDeleteProgram(m_ProgramObj);
-            m_ProgramObj = GLES20.GL_NONE;
+        if (glProgram !=0) {
+            GLES20.glDeleteProgram(glProgram);
+            glProgram = GLES20.GL_NONE;
         }
     }
 }

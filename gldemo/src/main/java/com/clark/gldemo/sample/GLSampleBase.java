@@ -19,11 +19,7 @@ import java.nio.ShortBuffer;
  */
 public abstract class GLSampleBase {
     protected static final String TAG="GLSample";
-    protected int m_VertexShader;
-    protected int m_FragmentShader;
-    protected int m_ProgramObj;
-    protected int m_SurfaceWidth;
-    protected int m_SurfaceHeight;
+    protected int glProgram;
 
     public void loadImage(NativeImage pImage) {
 

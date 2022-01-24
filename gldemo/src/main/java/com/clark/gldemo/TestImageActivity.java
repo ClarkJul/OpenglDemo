@@ -1,6 +1,4 @@
-package com.clark.opengldemo;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.clark.gldemo;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,9 +6,12 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.clark.gldemo.utils.OpenGLUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +25,10 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class TestImageActivity extends AppCompatActivity implements GLSurfaceView.Renderer, ViewTreeObserver.OnGlobalLayoutListener{
     final float[] vertexCoord = {
-            -0.5f, 0.5f, 0.0f,  // Position 0
-            -0.5f, -0.5f, 0.0f,  // Position 1
-            0.5f, -0.5f, 0.0f,   // Position 2
-            0.5f, 0.5f, 0.0f,   // Position 3
+            -1.0f, 0.5f, 0.0f,  // Position 0
+            -1.0f, -0.5f, 0.0f,  // Position 1
+            1.0f, -0.5f, 0.0f,   // Position 2
+            1.0f, 0.5f, 0.0f,   // Position 3
     };
 
     final float[] textureCoord = {
@@ -82,6 +83,11 @@ public class TestImageActivity extends AppCompatActivity implements GLSurfaceVie
         imageView = findViewById(R.id.iv_display);
         mSurfaceView.setEGLContextClientVersion(2);
         mSurfaceView.setRenderer(this);
+
+        //创建缓存，存放数据
+        fb_position = (FloatBuffer) OpenGLUtil.createBuffer(vertexCoord);
+        fb_texturecoord =(FloatBuffer) OpenGLUtil.createBuffer(textureCoord);
+        fb_drawCoord = (ShortBuffer) OpenGLUtil.createBuffer(mdrawCoord);
     }
 
     @Override
@@ -94,20 +100,7 @@ public class TestImageActivity extends AppCompatActivity implements GLSurfaceVie
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         //激活2D纹理
         GLES20.glEnable(GLES20.GL_TEXTURE_2D);
-        //创建缓存，存放数据
-        fb_position = ByteBuffer.allocateDirect(vertexCoord.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        fb_position.put(vertexCoord).position(0);
-        fb_texturecoord = ByteBuffer.allocateDirect(textureCoord.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        fb_texturecoord.put(textureCoord).position(0);
 
-        fb_drawCoord = ByteBuffer.allocateDirect(mdrawCoord.length * 2)
-                .order(ByteOrder.nativeOrder())
-                .asShortBuffer();
-        fb_drawCoord.put(mdrawCoord).position(0);
         mprogramHandle= OpenGLUtil.createProgram(sVertexShader,sFragmentShader);
         //获取渲染器中变量的句柄
         mAPositionIndex = GLES20.glGetAttribLocation(mprogramHandle, "a_position");
@@ -124,7 +117,7 @@ public class TestImageActivity extends AppCompatActivity implements GLSurfaceVie
         Bitmap bitmap;
         try {
             bitmap = BitmapFactory.decodeStream(is);
-            if (bitmap != null) {
+            /*if (bitmap != null) {
                 int bytes = bitmap.getByteCount();
                 imageBuffer = ByteBuffer.allocate(bytes).order(ByteOrder.nativeOrder());
                 bitmap.copyPixelsToBuffer(imageBuffer);
@@ -137,7 +130,7 @@ public class TestImageActivity extends AppCompatActivity implements GLSurfaceVie
                         imageView.setImageBitmap(test);
                     }
                 });
-            }
+            }*/
         } finally {
             try {
                 is.close();

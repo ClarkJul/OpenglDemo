@@ -5,10 +5,8 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import com.clark.gldemo.NativeImage;
 import com.clark.gldemo.utils.OpenGLUtil;
 
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -36,34 +34,33 @@ public class TextureMapSample extends GLSampleBase {
 
     final String sVertexShader =
             "attribute vec4 a_position;"
-                    + "attribute vec2 a_texCoord;"
-                    + "varying vec2 v_texCoord;"
-                    + "void main()"
-                    + "{"
-                    + "gl_Position = a_position;"
-                    + "v_texCoord = a_texCoord;"
-                    + "}";
+          + "attribute vec2 a_texCoord;"
+          + "varying vec2 v_texCoord;"
+          + "void main()"
+          + "{"
+          + "gl_Position = a_position;"
+          + "v_texCoord = a_texCoord;"
+          + "}";
 
     final String sFragmentShader =
             "precision mediump float;"
-                    + "varying vec2 v_texCoord;"
-                    + "uniform sampler2D u_samplerTexture;"
-                    + "void main()"
-                    + "{"
-                    + "gl_FragColor = texture2D(u_samplerTexture,v_texCoord);"
-                    + "}";
+          + "varying vec2 v_texCoord;"
+          + "uniform sampler2D u_samplerTexture;"
+          + "void main()"
+          + "{"
+          + "gl_FragColor = texture2D(u_samplerTexture,v_texCoord);"
+          + "}";
 
-    private int m_TextureId;
-    private int m_SamplerLoc;
-    private int aPosition;
-    private int aTexture;
+    private int textureId;
+    private int samplerLoc;
+    private int positionAtt;
+    private int textureAtt;
 
-    private FloatBuffer verticesBuffer = null;
-    private FloatBuffer textureBuffer = null;
-    private ShortBuffer indicesBuffer = null;
+    private FloatBuffer verticesBuffer ;
+    private FloatBuffer textureBuffer ;
+    private ShortBuffer indicesBuffer ;
 
     private Bitmap image;
-
 
     public TextureMapSample() {
         verticesBuffer = (FloatBuffer) createBuffer(verticesCoords);
@@ -74,20 +71,15 @@ public class TextureMapSample extends GLSampleBase {
     @Override
     public void init() {
         Log.e(TAG, "TextureMapSample init()" );
-        m_TextureId=OpenGLUtil.glGenTexture();
-        //String vShaderStr = OpenGLUtil.readRawShaderFile(OpenglApp.getApp(), R.raw.texture_map_vert);
-        //String fShaderStr = OpenGLUtil.readRawShaderFile(OpenglApp.getApp(), R.raw.texture_map_frag);
-        m_ProgramObj = OpenGLUtil.createProgram(sVertexShader,sFragmentShader);
-        if (m_ProgramObj != 0) {
-            m_SamplerLoc = GLES20.glGetUniformLocation(m_ProgramObj, "u_samplerTexture");
-            aPosition = GLES20.glGetUniformLocation(m_ProgramObj, "a_position");
-            aTexture = GLES20.glGetUniformLocation(m_ProgramObj, "a_texCoord");
-
-            // Use the program object
-            GLES20.glUseProgram(m_ProgramObj);
+        glProgram = OpenGLUtil.createProgram(sVertexShader,sFragmentShader);
+        if (glProgram != 0) {
+            samplerLoc = GLES20.glGetUniformLocation(glProgram, "u_samplerTexture");
+            positionAtt = GLES20.glGetAttribLocation(glProgram, "a_position");
+            textureAtt = GLES20.glGetAttribLocation(glProgram, "a_texCoord");
         } else {
             Log.e(TAG, "TextureMapSample Init create program fail");
         }
+        textureId =OpenGLUtil.glGenTexture();
     }
 
     @Override
@@ -100,41 +92,37 @@ public class TextureMapSample extends GLSampleBase {
     @Override
     public void draw(int screenW, int screenH) {
         Log.e(TAG, "TextureMapSample Draw()");
-        if (m_ProgramObj == GLES20.GL_NONE || m_TextureId == GLES20.GL_NONE) {
+        if (glProgram == GLES20.GL_NONE || textureId == GLES20.GL_NONE) {
             return;
         }
-        GLES20.glClear(GLES20.GL_STENCIL_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        GLES20.glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 
+        GLES20.glUseProgram(glProgram);
         // Load the vertex position
-        verticesBuffer.position(0);
-        GLES20.glEnableVertexAttribArray(aPosition);
-        GLES20.glVertexAttribPointer(aPosition, 3, GLES20.GL_FLOAT, false, 3 * 4, verticesBuffer);
+        GLES20.glEnableVertexAttribArray(positionAtt);
+        GLES20.glVertexAttribPointer(positionAtt, 3, GLES20.GL_FLOAT, false, 3 * 4, verticesBuffer);
         // Load the texture coordinate
-        textureBuffer.position(0);
-        GLES20.glEnableVertexAttribArray(aTexture);
-        GLES20.glVertexAttribPointer(aTexture, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
+
+        GLES20.glEnableVertexAttribArray(textureAtt);
+        GLES20.glVertexAttribPointer(textureAtt, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
 
         // Set the RGBA map sampler to texture unit to 0
-        GLES20.glUniform1i(m_SamplerLoc, 0);
+        GLES20.glUniform1i(samplerLoc, 0);
 
         // Bind the RGBA map
-        GLES20.glEnable(GLES20.GL_TEXTURE_2D);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, m_TextureId);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, image, 0);
 
-        indicesBuffer.position(0);
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_SHORT, indicesBuffer);
     }
 
     @Override
     public void destroy() {
         Log.e(TAG, "TextureMapSample destroy()" );
-        if (m_ProgramObj != 0) {
-            GLES20.glDeleteProgram(m_ProgramObj);
-            GLES20.glDeleteTextures(1, (IntBuffer) createBuffer(new int[]{m_TextureId}));
-            m_ProgramObj = GLES20.GL_NONE;
+        if (glProgram != 0) {
+            GLES20.glDeleteProgram(glProgram);
+            GLES20.glDeleteTextures(1, (IntBuffer) createBuffer(new int[]{textureId}));
+            glProgram = GLES20.GL_NONE;
         }
     }
 }

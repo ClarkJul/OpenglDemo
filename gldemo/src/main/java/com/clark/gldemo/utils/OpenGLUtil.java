@@ -9,6 +9,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -115,15 +121,12 @@ public class OpenGLUtil {
         for (int i = 0; i < textures.length; i++) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[i]);
 
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-
-
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, GLES20.GL_NONE);
         }
     }
 
@@ -131,11 +134,11 @@ public class OpenGLUtil {
         int[] textures=new int[1];
         GLES20.glGenTextures(1, textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, GLES20.GL_NONE);
         return textures[0];
     }
 
@@ -156,5 +159,35 @@ public class OpenGLUtil {
             Log.e("OpenGlUtils", op+"   checkGlError: error="+error);
             error =GLES20.glGetError();
         }
+    }
+
+    public static <T> Buffer createBuffer(T data) {
+        Buffer res=null;
+        //Log.e(TAG, "createBuffer: "+(data instanceof float[]) );
+        if (data instanceof float[]){
+            float[] input= (float[]) data;
+            res = ByteBuffer.allocateDirect(input.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            ((FloatBuffer)res).put(input, 0, input.length).position(0);
+        }else if (data instanceof short[]){
+            short[] input= (short[]) data;
+            res = ByteBuffer.allocateDirect(input.length * 2)
+                    .order(ByteOrder.nativeOrder())
+                    .asShortBuffer();
+            ((ShortBuffer)res).put(input, 0, input.length).position(0);
+        }else if (data instanceof int[]){
+            int[] input= (int[]) data;
+            res = ByteBuffer.allocateDirect(input.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asIntBuffer();
+            ((IntBuffer)res).put(input, 0, input.length).position(0);
+        }else if (data instanceof byte[]){
+            byte[] input= (byte[]) data;
+            res = ByteBuffer.allocateDirect(input.length )
+                    .order(ByteOrder.nativeOrder());
+            ((ByteBuffer)res).put(input, 0, input.length).position(0);
+        }
+        return res;
     }
 }

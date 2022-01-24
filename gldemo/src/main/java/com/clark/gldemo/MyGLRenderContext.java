@@ -1,7 +1,8 @@
 package com.clark.gldemo;
 
 import android.graphics.Bitmap;
-import android.opengl.GLES32;
+import android.opengl.GLES20;
+import android.opengl.GLES20;
 import android.util.Log;
 
 import com.clark.gldemo.sample.GLSampleBase;
@@ -39,7 +40,6 @@ public class MyGLRenderContext {
         if (m_pCurSample != null) {
             m_pCurSample.loadImage(bitmap);
         }
-
     }
 
     public void setImageData(int format, int width, int height, byte[] pData) {
@@ -63,7 +63,7 @@ public class MyGLRenderContext {
         }
 
         if (m_pCurSample != null) {
-            ((TextureMapSample)m_pCurSample).loadImage(nativeImage);
+            m_pCurSample.loadImage(nativeImage);
         }
 
     }
@@ -272,18 +272,19 @@ public class MyGLRenderContext {
     }
 
     public void onSurfaceCreated() {
-        GLES32.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        //GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     public void onSurfaceChanged(int width, int height) {
-        GLES32.glViewport(0, 0, width, height);
+        GLES20.glViewport(0, 0, width, height);
         m_ScreenW = width;
         m_ScreenH = height;
     }
 
     public void onDrawFrame() {
         Log.e(TAG, "onDrawFrame: " );
-        GLES32.glClear(GLES32.GL_DEPTH_BUFFER_BIT | GLES32.GL_COLOR_BUFFER_BIT);
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         if (m_pBeforeSample != null) {
             m_pBeforeSample.destroy();
             m_pBeforeSample = null;
