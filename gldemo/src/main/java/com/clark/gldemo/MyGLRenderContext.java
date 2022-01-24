@@ -6,8 +6,10 @@ import android.opengl.GLES20;
 import android.util.Log;
 
 import com.clark.gldemo.sample.GLSampleBase;
+import com.clark.gldemo.sample.NV21TextureMapSample;
 import com.clark.gldemo.sample.TextureMapSample;
 import com.clark.gldemo.sample.TriangleSample;
+import com.clark.gldemo.utils.OpenGLUtil;
 
 import java.util.Arrays;
 
@@ -16,7 +18,8 @@ import java.util.Arrays;
  * 2022/1/22 17:33
  */
 public class MyGLRenderContext {
-    private static final String TAG="MyGLRenderContext";
+    private static final String TAG = "MyGLRenderContext";
+
     public static MyGLRenderContext getInstanse() {
         //返回静态内部类中的静态变量实例
         return SingletonHolder.manager;
@@ -47,18 +50,20 @@ public class MyGLRenderContext {
         nativeImage.format = format;
         nativeImage.width = width;
         nativeImage.height = height;
-        nativeImage.ppPlane[0] = pData;
-
+        //Log.e(TAG, "setImageData: pData.length="+pData.length+",width*height*3/2=" +width*height*3/2);
         switch (format) {
             case Constant.IMAGE.FORMAT_NV12:
             case Constant.IMAGE.FORMAT_NV21:
-                nativeImage.ppPlane[1] = Arrays.copyOfRange(nativeImage.ppPlane[0], width * height, nativeImage.ppPlane[0].length);
+                nativeImage.ppPlane[0] = OpenGLUtil.createByteBuffer(pData, 0, width * height);
+                nativeImage.ppPlane[1] = OpenGLUtil.createByteBuffer(pData, width * height, width * height / 2);//Arrays.copyOfRange(nativeImage.ppPlane[0], width * height, nativeImage.ppPlane[0].length);
                 break;
             case Constant.IMAGE.FORMAT_I420:
-                nativeImage.ppPlane[1] = Arrays.copyOfRange(nativeImage.ppPlane[0], width * height, nativeImage.ppPlane[0].length);
-                nativeImage.ppPlane[2] = Arrays.copyOfRange(nativeImage.ppPlane[1], width * height / 4, nativeImage.ppPlane[1].length);
+                nativeImage.ppPlane[0] = OpenGLUtil.createByteBuffer(pData, 0, width * height);
+                nativeImage.ppPlane[1] = OpenGLUtil.createByteBuffer(pData, width * height, width * height / 4);
+                nativeImage.ppPlane[2] = OpenGLUtil.createByteBuffer(pData, width * height * 5 / 4, width * height / 4);
                 break;
             default:
+                nativeImage.ppPlane[0] = OpenGLUtil.createByteBuffer(pData, 0, pData.length);
                 break;
         }
 
@@ -74,16 +79,16 @@ public class MyGLRenderContext {
         nativeImage.format = format;
         nativeImage.width = width;
         nativeImage.height = height;
-        nativeImage.ppPlane[0] = pData;
+        nativeImage.ppPlane[0] = OpenGLUtil.createByteBuffer(pData, 0, width * height);
 
         switch (format) {
             case Constant.IMAGE.FORMAT_NV12:
             case Constant.IMAGE.FORMAT_NV21:
-                nativeImage.ppPlane[1] = Arrays.copyOfRange(nativeImage.ppPlane[0], width * height, nativeImage.ppPlane[0].length);
+                nativeImage.ppPlane[1] = OpenGLUtil.createByteBuffer(pData, width * height, pData.length);//Arrays.copyOfRange(nativeImage.ppPlane[0], width * height, nativeImage.ppPlane[0].length);
                 break;
             case Constant.IMAGE.FORMAT_I420:
-                nativeImage.ppPlane[1] = Arrays.copyOfRange(nativeImage.ppPlane[0], width * height, nativeImage.ppPlane[0].length);
-                nativeImage.ppPlane[2] = Arrays.copyOfRange(nativeImage.ppPlane[1], width * height / 4, nativeImage.ppPlane[1].length);
+                nativeImage.ppPlane[1] = OpenGLUtil.createByteBuffer(pData, width * height, width * height / 4);
+                nativeImage.ppPlane[2] = OpenGLUtil.createByteBuffer(pData, width * height * 5 / 4, width * height / 4);
                 break;
             default:
                 break;
@@ -96,7 +101,7 @@ public class MyGLRenderContext {
     }
 
     public void setParamsInit(int paramType, int value0, int value1) {
-        Log.e(TAG, "setParamsInit: paramType="+paramType+",value0="+value0);
+        Log.e(TAG, "setParamsInit: paramType=" + paramType + ",value0=" + value0);
         if (paramType == Constant.SAMPLE_TYPE.SAMPLE_TYPE) {
             m_pBeforeSample = m_pCurSample;
             switch (value0) {
@@ -109,7 +114,7 @@ public class MyGLRenderContext {
                     m_pCurSample = new TextureMapSample();
                     break;
                 case Constant.SAMPLE_TYPE.SAMPLE_TYPE_YUV_TEXTURE_MAP:
-                    //m_pCurSample = new NV21TextureMapSample();
+                    m_pCurSample = new NV21TextureMapSample();
                     break;
                 case Constant.SAMPLE_TYPE.SAMPLE_TYPE_VAO:
                     //m_pCurSample = new VaoSample();
@@ -282,7 +287,7 @@ public class MyGLRenderContext {
     }
 
     public void onDrawFrame() {
-        Log.e(TAG, "onDrawFrame: " );
+        Log.e(TAG, "onDrawFrame: ");
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         if (m_pBeforeSample != null) {

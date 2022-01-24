@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements AudioCollector.Ca
                         loadRGBAImage(R.drawable.dzzz);
                         break;
                     case Constant.SAMPLE_TYPE.SAMPLE_TYPE_YUV_TEXTURE_MAP:
-                        //loadNV21Image();
+                        loadNV21Image();
                         break;
                     case Constant.SAMPLE_TYPE.SAMPLE_TYPE_VAO:
                         break;
@@ -445,7 +445,12 @@ public class MainActivity extends AppCompatActivity implements AudioCollector.Ca
         try {
             bitmap = BitmapFactory.decodeStream(is);
             if (bitmap != null) {
-                mGLRender.setImageData(bitmap);
+                int bytes = bitmap.getByteCount();
+                ByteBuffer buf = ByteBuffer.allocate(bytes);
+                bitmap.copyPixelsToBuffer(buf);
+                byte[] byteArray = buf.array();
+                //mGLRender.setImageData(bitmap);
+                mGLRender.setImageData(Constant.IMAGE.FORMAT_RGBA, bitmap.getWidth(), bitmap.getHeight(), byteArray);
             }
         } finally {
             try {

@@ -23,11 +23,11 @@ import javax.microedition.khronos.opengles.GL10;
  * 2022/1/23 13:09
  */
 public class OpenGLUtil {
-    private static final String TAG="OpenGLUtil::";
+    private static final String TAG = "OpenGLUtil::";
 
-    public  static int createProgram(String vertShaderStr,String fragShaderStr) {
-        int mvertexShaderHandle=createShapeHandle(vertShaderStr,GLES20.GL_VERTEX_SHADER);
-        int mfragmentShaderHandle=createShapeHandle(fragShaderStr,GLES20.GL_FRAGMENT_SHADER);
+    public static int createProgram(String vertShaderStr, String fragShaderStr) {
+        int mvertexShaderHandle = createShapeHandle(vertShaderStr, GLES20.GL_VERTEX_SHADER);
+        int mfragmentShaderHandle = createShapeHandle(fragShaderStr, GLES20.GL_FRAGMENT_SHADER);
         if (mvertexShaderHandle == 0 || mfragmentShaderHandle == 0) {
             throw new RuntimeException("Fail to create shader!");
         }
@@ -131,7 +131,7 @@ public class OpenGLUtil {
     }
 
     public static int glGenTexture() {
-        int[] textures=new int[1];
+        int[] textures = new int[1];
         GLES20.glGenTextures(1, textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
@@ -155,39 +155,43 @@ public class OpenGLUtil {
 
     public static void checkGlError(String op) {
         int error = GLES20.glGetError();
-        while(error!=0) {
-            Log.e("OpenGlUtils", op+"   checkGlError: error="+error);
-            error =GLES20.glGetError();
+        while (error != 0) {
+            Log.e("OpenGlUtils", op + "   checkGlError: error=" + error);
+            error = GLES20.glGetError();
         }
     }
 
     public static <T> Buffer createBuffer(T data) {
-        Buffer res=null;
+        Buffer res = null;
         //Log.e(TAG, "createBuffer: "+(data instanceof float[]) );
-        if (data instanceof float[]){
-            float[] input= (float[]) data;
+        if (data instanceof float[]) {
+            float[] input = (float[]) data;
             res = ByteBuffer.allocateDirect(input.length * 4)
                     .order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
-            ((FloatBuffer)res).put(input, 0, input.length).position(0);
-        }else if (data instanceof short[]){
-            short[] input= (short[]) data;
+            ((FloatBuffer) res).put(input, 0, input.length).position(0);
+        } else if (data instanceof short[]) {
+            short[] input = (short[]) data;
             res = ByteBuffer.allocateDirect(input.length * 2)
                     .order(ByteOrder.nativeOrder())
                     .asShortBuffer();
-            ((ShortBuffer)res).put(input, 0, input.length).position(0);
-        }else if (data instanceof int[]){
-            int[] input= (int[]) data;
+            ((ShortBuffer) res).put(input, 0, input.length).position(0);
+        } else if (data instanceof int[]) {
+            int[] input = (int[]) data;
             res = ByteBuffer.allocateDirect(input.length * 4)
                     .order(ByteOrder.nativeOrder())
                     .asIntBuffer();
-            ((IntBuffer)res).put(input, 0, input.length).position(0);
-        }else if (data instanceof byte[]){
-            byte[] input= (byte[]) data;
-            res = ByteBuffer.allocateDirect(input.length )
+            ((IntBuffer) res).put(input, 0, input.length).position(0);
+        } else if (data instanceof byte[]) {
+            byte[] input = (byte[]) data;
+            res = ByteBuffer.allocateDirect(input.length)
                     .order(ByteOrder.nativeOrder());
-            ((ByteBuffer)res).put(input, 0, input.length).position(0);
+            ((ByteBuffer) res).put(input, 0, input.length).position(0);
         }
         return res;
+    }
+
+    public static ByteBuffer createByteBuffer(byte[] data, int offset,int length) {
+        return ByteBuffer.allocateDirect(length).order(ByteOrder.nativeOrder()).put(data, offset, length);
     }
 }

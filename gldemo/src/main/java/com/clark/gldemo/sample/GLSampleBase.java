@@ -50,19 +50,19 @@ public abstract class GLSampleBase {
     public abstract void destroy();
 
     public final void copyNativeImage(NativeImage imageOrigin,NativeImage imageTarget){
-        imageTarget.ppPlane[0]=imageOrigin.ppPlane[0].clone();
+        imageTarget.ppPlane[0]=imageOrigin.ppPlane[0];
         if (imageOrigin.ppPlane[1]!=null){
-            imageTarget.ppPlane[1]=imageOrigin.ppPlane[1].clone();
+            imageTarget.ppPlane[1]=imageOrigin.ppPlane[1];
         }
         if (imageOrigin.ppPlane[2]!=null){
-            imageTarget.ppPlane[2]=imageOrigin.ppPlane[2].clone();
+            imageTarget.ppPlane[2]=imageOrigin.ppPlane[2];
         }
-        Log.e(TAG, "copyNativeImage: " +imageTarget.ppPlane[0].length);
+        /*Log.e(TAG, "copyNativeImage: " +imageTarget.ppPlane[0].length);
         imageTarget.bitmap= Bitmap.createBitmap(404, 336, Bitmap.Config.ARGB_8888);
-        imageTarget.bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(imageTarget.ppPlane[0]));
+        imageTarget.bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(imageTarget.ppPlane[0]));*/
     }
     public final void freeNativeImage(NativeImage imageTarget){
-        imageTarget.ppPlane=new byte[3][];
+        imageTarget.ppPlane=new ByteBuffer[3];
     }
 
     protected  <T> Buffer createBuffer(T data) {

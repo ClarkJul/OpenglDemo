@@ -2,6 +2,7 @@ package com.clark.gldemo;
 
 import android.graphics.Bitmap;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
@@ -12,14 +13,14 @@ public class NativeImage {
    public int width;
    public int height;
    public int format;
-   public byte[][] ppPlane;
+   public ByteBuffer[] ppPlane;
    public Bitmap bitmap;
 
     public NativeImage() {
         width = 0;
         height = 0;
         format = 0;
-        ppPlane=new byte[3][];
+        ppPlane=new ByteBuffer[3];
         ppPlane[0] = null;
         ppPlane[1] = null;
         ppPlane[2] = null;

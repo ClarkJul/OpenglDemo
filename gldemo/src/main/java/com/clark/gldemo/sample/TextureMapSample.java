@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
+import com.clark.gldemo.NativeImage;
 import com.clark.gldemo.utils.OpenGLUtil;
 
 import java.nio.FloatBuffer;
@@ -59,7 +60,7 @@ public class TextureMapSample extends GLSampleBase {
     private FloatBuffer verticesBuffer ;
     private FloatBuffer textureBuffer ;
     private ShortBuffer indicesBuffer ;
-
+    private NativeImage renderImage;
     private Bitmap image;
 
     public TextureMapSample() {
@@ -88,6 +89,14 @@ public class TextureMapSample extends GLSampleBase {
        image=bitmap;//Bitmap.createBitmap(bitmap);
     }
 
+    @Override
+    public void loadImage(NativeImage pImage) {
+        renderImage=new NativeImage();
+        renderImage.format=pImage.format;
+        renderImage.width=pImage.width;
+        renderImage.height=pImage.height;
+        copyNativeImage(pImage,renderImage);
+    }
 
     @Override
     public void draw(int screenW, int screenH) {
@@ -111,7 +120,10 @@ public class TextureMapSample extends GLSampleBase {
         // Bind the RGBA map
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, image, 0);
+        //GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, image, 0);
+
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA,renderImage.width, renderImage.height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, renderImage.ppPlane[0]);
+
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_SHORT, indicesBuffer);
     }
@@ -121,7 +133,7 @@ public class TextureMapSample extends GLSampleBase {
         Log.e(TAG, "TextureMapSample destroy()" );
         if (glProgram != 0) {
             GLES20.glDeleteProgram(glProgram);
-            GLES20.glDeleteTextures(1, (IntBuffer) createBuffer(new int[]{textureId}));
+            GLES20.glDeleteTextures(1, new int[]{textureId},0);
             glProgram = GLES20.GL_NONE;
         }
     }
