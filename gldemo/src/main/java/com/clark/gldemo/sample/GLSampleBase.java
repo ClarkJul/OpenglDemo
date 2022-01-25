@@ -57,6 +57,7 @@ public abstract class GLSampleBase {
         if (imageOrigin.ppPlane[2]!=null){
             imageTarget.ppPlane[2]=imageOrigin.ppPlane[2];
         }
+
         /*Log.e(TAG, "copyNativeImage: " +imageTarget.ppPlane[0].length);
         imageTarget.bitmap= Bitmap.createBitmap(404, 336, Bitmap.Config.ARGB_8888);
         imageTarget.bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(imageTarget.ppPlane[0]));*/

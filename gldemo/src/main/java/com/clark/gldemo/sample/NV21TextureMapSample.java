@@ -29,12 +29,15 @@ public class NV21TextureMapSample extends GLSampleBase {
            +"uniform sampler2D uv_texture;"
            +"void main()"
            +"{"
-           +"vec3 yuv;"
-           +"yuv.x = texture2D(y_texture, v_texCoord).r;"
-           +"yuv.y = texture2D(uv_texture, v_texCoord).a-0.5;"
-           +"yuv.z = texture2D(uv_texture, v_texCoord).r-0.5;"
-           +"highp vec3 rgb = mat3(1,1,1,0,-0.344,1.770,1.403,-0.714,0) * yuv;"
-           +"gl_FragColor = vec4(rgb, 1.0);"
+           /*+"vec3 yuv;"*/
+           +"float y = texture2D(y_texture, v_texCoord).r;"
+           +"float u = texture2D(uv_texture, v_texCoord).a-0.5;"
+           +"float v = texture2D(uv_texture, v_texCoord).r-0.5;"
+           /*+"highp vec3 rgb = mat3(1,1,1,0,-0.344,1.770,1.403,-0.714,0) * yuv;"*/
+           +"float r = y + 1.403*v;"
+           +"float g = y - 0.344*u - 0.714*v;"
+           +"float b = y + 1.770*u;"
+           +"gl_FragColor = vec4(r, g, b, 1.0);"
            +"}";
 
     private final float[] verticesCoords = {
@@ -112,13 +115,13 @@ public class NV21TextureMapSample extends GLSampleBase {
         GLES20.glUniform1i(ySamplerLoc, 0);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, ytextureId);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0,GLES20. GL_LUMINANCE, renderImage.width, renderImage.height, 0, GLES20.GL_LUMINANCE, GLES20.GL_UNSIGNED_BYTE, renderImage.ppPlane[0]);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0,GLES20. GL_LUMINANCE, renderImage.width, renderImage.height, 0, GLES20.GL_LUMINANCE, GLES20.GL_UNSIGNED_BYTE, renderImage.ppPlane[0].position(0));
 
 
         GLES20.glUniform1i(uvSamplerLoc, 1);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, uvtextureId);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0,GLES20. GL_LUMINANCE_ALPHA, renderImage.width>>1, renderImage.height>>1, 0, GLES20.GL_LUMINANCE_ALPHA, GLES20.GL_UNSIGNED_BYTE, renderImage.ppPlane[1]);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0,GLES20. GL_LUMINANCE_ALPHA, renderImage.width>>1, renderImage.height>>1, 0, GLES20.GL_LUMINANCE_ALPHA, GLES20.GL_UNSIGNED_BYTE, renderImage.ppPlane[1].position(0));
 
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_SHORT, indicesBuffer);

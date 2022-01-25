@@ -9,6 +9,7 @@ import com.clark.gldemo.sample.GLSampleBase;
 import com.clark.gldemo.sample.NV21TextureMapSample;
 import com.clark.gldemo.sample.TextureMapSample;
 import com.clark.gldemo.sample.TriangleSample;
+import com.clark.gldemo.sample.VAOVBOSample;
 import com.clark.gldemo.utils.OpenGLUtil;
 
 import java.util.Arrays;
@@ -50,7 +51,8 @@ public class MyGLRenderContext {
         nativeImage.format = format;
         nativeImage.width = width;
         nativeImage.height = height;
-        //Log.e(TAG, "setImageData: pData.length="+pData.length+",width*height*3/2=" +width*height*3/2);
+
+        Log.e(TAG, "setImageData: format="+format+",width=" +width+",height="+height);
         switch (format) {
             case Constant.IMAGE.FORMAT_NV12:
             case Constant.IMAGE.FORMAT_NV21:
@@ -117,7 +119,7 @@ public class MyGLRenderContext {
                     m_pCurSample = new NV21TextureMapSample();
                     break;
                 case Constant.SAMPLE_TYPE.SAMPLE_TYPE_VAO:
-                    //m_pCurSample = new VaoSample();
+                    m_pCurSample = new VAOVBOSample();
                     break;
                 case Constant.SAMPLE_TYPE.SAMPLE_TYPE_FBO:
                     //m_pCurSample = new FBOSample();

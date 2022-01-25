@@ -96,6 +96,14 @@ public class TextureMapSample extends GLSampleBase {
         renderImage.width=pImage.width;
         renderImage.height=pImage.height;
         copyNativeImage(pImage,renderImage);
+
+        /*image= Bitmap.createBitmap( renderImage.width, renderImage.height, Bitmap.Config.ARGB_8888);
+        image.copyPixelsFromBuffer(renderImage.ppPlane[0].position(0));
+*/
+
+
+//        byte[] array = renderImage.ppPlane[0].array();
+//        OpenGLUtil.writeByteToFile(null,array);
     }
 
     @Override
@@ -104,6 +112,8 @@ public class TextureMapSample extends GLSampleBase {
         if (glProgram == GLES20.GL_NONE || textureId == GLES20.GL_NONE) {
             return;
         }
+
+        Log.e(TAG, "draw: width="+renderImage.width+",height="+renderImage.height);
 
         GLES20.glUseProgram(glProgram);
         // Load the vertex position
@@ -121,10 +131,8 @@ public class TextureMapSample extends GLSampleBase {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
         //GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, image, 0);
-
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA,renderImage.width, renderImage.height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, renderImage.ppPlane[0]);
-
-
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA,renderImage.width, renderImage.height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, renderImage.ppPlane[0].position(0));
+//        GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, renderImage.width, renderImage.height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, renderImage.ppPlane[0].position(0));
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_SHORT, indicesBuffer);
     }
 
