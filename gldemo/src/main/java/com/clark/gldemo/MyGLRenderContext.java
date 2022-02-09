@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import com.clark.gldemo.sample.FBOSample;
 import com.clark.gldemo.sample.GLSampleBase;
 import com.clark.gldemo.sample.NV21TextureMapSample;
 import com.clark.gldemo.sample.TextureMapSample;
@@ -122,7 +123,7 @@ public class MyGLRenderContext {
                     m_pCurSample = new VAOVBOSample();
                     break;
                 case Constant.SAMPLE_TYPE.SAMPLE_TYPE_FBO:
-                    //m_pCurSample = new FBOSample();
+                    m_pCurSample = new FBOSample();
                     break;
                 case Constant.SAMPLE_TYPE.SAMPLE_TYPE_FBO_LEG:
                     //m_pCurSample = new FBOLegLengthenSample();
@@ -297,7 +298,7 @@ public class MyGLRenderContext {
             m_pBeforeSample = null;
         }
         if (m_pCurSample != null) {
-            m_pCurSample.init();
+            if (!m_pCurSample.isInited) m_pCurSample.init();
             m_pCurSample.draw(m_ScreenW, m_ScreenH);
         }
     }

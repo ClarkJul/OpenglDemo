@@ -29,7 +29,9 @@ public class OpenGL32Util {
 
     public static int createProgram(String vertShaderStr, String fragShaderStr) {
         int mvertexShaderHandle = createShapeHandle(vertShaderStr, GLES32.GL_VERTEX_SHADER);
+        checkGlError("GL_VERTEX_SHADER");
         int mfragmentShaderHandle = createShapeHandle(fragShaderStr, GLES32.GL_FRAGMENT_SHADER);
+        checkGlError("GL_FRAGMENT_SHADER");
         if (mvertexShaderHandle == 0 || mfragmentShaderHandle == 0) {
             throw new RuntimeException("Fail to create shader!");
         }
@@ -63,6 +65,7 @@ public class OpenGL32Util {
     private static int createShapeHandle(String shaderStr, int type) {
         //创建渲染器容器
         int handle = GLES32.glCreateShader(type);
+        checkGlError("glCreateShader");
         if (handle != 0) {
             //将渲染器代码放入容器中
             GLES32.glShaderSource(handle, shaderStr);
@@ -158,7 +161,7 @@ public class OpenGL32Util {
     public static void checkGlError(String op) {
         int error = GLES32.glGetError();
         while (error != 0) {
-            Log.e("OpenGlUtils", op + "   checkGlError: error=" + error);
+            Log.e(TAG, op + "   checkGlError: error=" + error);
             error = GLES32.glGetError();
         }
     }

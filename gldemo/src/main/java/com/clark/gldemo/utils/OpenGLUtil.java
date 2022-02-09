@@ -104,12 +104,10 @@ public class OpenGLUtil {
         String line;
         StringBuffer sb = new StringBuffer();
         try {
-
             while ((line = br.readLine()) != null) {
                 sb.append(line);
                 sb.append("\n");
             }
-
             br.close();
         } catch (IOException e) {
             e.printStackTrace();

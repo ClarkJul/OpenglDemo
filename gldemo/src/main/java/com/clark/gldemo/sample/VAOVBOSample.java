@@ -1,11 +1,14 @@
 package com.clark.gldemo.sample;
 
+import android.opengl.GLES20;
 import android.opengl.GLES32;
+import android.util.Log;
 
 import com.clark.gldemo.utils.OpenGL32Util;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 public class VAOVBOSample extends GLSampleBase {
 
@@ -51,7 +54,7 @@ public class VAOVBOSample extends GLSampleBase {
            +"}";
 
     // 4 vertices, with(x,y,z) ,(r, g, b, a) per-vertex
-    float[] vertices=new float[]{
+    final float[] vertices=new float[]{
                 -0.5f,  0.5f, 0.0f,       // v0
                 1.0f,  0.0f, 0.0f, 1.0f,  // c0
                 -0.5f, -0.5f, 0.0f,       // v1
@@ -66,33 +69,52 @@ public class VAOVBOSample extends GLSampleBase {
 
     private int mProgram=0;
 
-    int[] vaoId =new int[1];
-    int[] vboIds =new int[2];
+    int[] vaoId ={0};
+    int[] vboIds ={0,0};
+    private int positionAtt;
+    private int textureAtt;
 
     @Override
     public void init() {
+        OpenGL32Util.checkGlError("createProgram0");
         mProgram= OpenGL32Util.createProgram(vShaderStr,fShaderStr);
-        GLES32.glGenBuffers(2, (IntBuffer) createBuffer(vboIds));
+        OpenGL32Util.checkGlError("createProgram");
+        positionAtt= GLES32.glGetAttribLocation(mProgram,"a_position");
+        textureAtt= GLES32.glGetAttribLocation(mProgram,"a_color");
+        OpenGL32Util.checkGlError("GetAttrib");
+        FloatBuffer verticesBuf= (FloatBuffer) createBuffer(vertices);
+        ShortBuffer indicesBuf= (ShortBuffer) createBuffer(indices);
+
+        GLES32.glGenBuffers(2, vboIds,0);
+        Log.e(TAG, "init: vboId ="+vboIds[0]+","+vboIds[1]);
         GLES32.glBindBuffer(GLES32.GL_ARRAY_BUFFER, vboIds[0]);
-        GLES32.glBufferData(GLES32.GL_ARRAY_BUFFER, vertices.length, createBuffer(vertices), GLES32.GL_STATIC_DRAW);
+        GLES32.glBufferData(GLES32.GL_ARRAY_BUFFER, 4*vertices.length,verticesBuf, GLES32.GL_STATIC_DRAW);
+        OpenGL32Util.checkGlError("glBufferData0");
 
         GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
-        GLES32.glBufferData(GLES32.GL_ELEMENT_ARRAY_BUFFER, indices.length, createBuffer(indices), GLES32.GL_STATIC_DRAW);
+        GLES32.glBufferData(GLES32.GL_ELEMENT_ARRAY_BUFFER, 2*indices.length, indicesBuf, GLES32.GL_STATIC_DRAW);
+        OpenGL32Util.checkGlError("glBufferData1");
 
         // Generate VAO Id
-        GLES32.glGenVertexArrays(1, (IntBuffer) createBuffer(vaoId));
+        GLES32.glGenVertexArrays(1, vaoId,0);
+        Log.e(TAG, "init: vaoId ="+vaoId[0]);
         GLES32.glBindVertexArray(vaoId[0]);
 
         GLES32.glBindBuffer(GLES32.GL_ARRAY_BUFFER, vboIds[0]);
         GLES32.glBindBuffer(GLES32.GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
 
-        GLES32.glEnableVertexAttribArray(VERTEX_POS_INDX);
-        GLES32.glEnableVertexAttribArray(VERTEX_COLOR_INDX);
+        OpenGL32Util.checkGlError("glBindBuffer");
 
-        GLES32.glVertexAttribPointer(VERTEX_POS_INDX, VERTEX_POS_SIZE, GLES32.GL_FLOAT, false, VERTEX_STRIDE,0);
-        GLES32.glVertexAttribPointer(VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE, GLES32.GL_FLOAT, false, VERTEX_STRIDE, VERTEX_POS_SIZE*4);
+        GLES32.glEnableVertexAttribArray(positionAtt);
+        GLES32.glEnableVertexAttribArray(textureAtt);
+
+        GLES32.glVertexAttribPointer(positionAtt, VERTEX_POS_SIZE, GLES32.GL_FLOAT, false, VERTEX_STRIDE,0);
+        GLES32.glVertexAttribPointer(textureAtt, VERTEX_COLOR_SIZE, GLES32.GL_FLOAT, false, VERTEX_STRIDE, 4*VERTEX_POS_SIZE);
+
+        OpenGL32Util.checkGlError("glVertexAttribPointer");
 
         GLES32.glBindVertexArray(GLES32.GL_NONE);
+        isInited=true;
     }
 
     @Override
@@ -101,7 +123,7 @@ public class VAOVBOSample extends GLSampleBase {
 
         GLES32.glUseProgram(mProgram);
         GLES32.glBindVertexArray(vaoId[0]);
-
+        OpenGL32Util.checkGlError("glBindVertexArray");
         // Draw with the VAO settings
         GLES32.glDrawElements( GLES32.GL_TRIANGLES, 6,  GLES32.GL_UNSIGNED_SHORT, 0);
 

@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements AudioCollector.Ca
                     case Constant.SAMPLE_TYPE.SAMPLE_TYPE_VAO:
                         break;
                     case Constant.SAMPLE_TYPE.SAMPLE_TYPE_FBO:
-                        //loadRGBAImage(R.drawable.java);
+                        loadRGBAImage(R.drawable.java);
                         break;
                     case Constant.SAMPLE_TYPE.SAMPLE_TYPE_FBO_LEG:
                         //loadRGBAImage(R.drawable.leg);

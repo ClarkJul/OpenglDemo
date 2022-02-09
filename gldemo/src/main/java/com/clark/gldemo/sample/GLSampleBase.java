@@ -20,6 +20,7 @@ import java.nio.ShortBuffer;
 public abstract class GLSampleBase {
     protected static final String TAG="GLSample";
     protected int glProgram;
+    public boolean isInited=false;
 
     public void loadImage(NativeImage pImage) {
 
